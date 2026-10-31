@@ -311,7 +311,7 @@ to adversarial changes in the composition of the neighborhoods.
 
 The results of the adversarial neighborhoods are depicted in the table below.
 
-![Adversarial Neighborhoods Table](image.png)
+![Adversarial Neighborhoods Table](image-2.png)
 
 The results indicate that the Deep Sets model is sensitive to changes in the composition of the neighborhood.
 The model achieves an accuracy of 96.5% and a macro-F1 score of 0.965 with the initial neighborhoods.
