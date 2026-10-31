@@ -85,15 +85,6 @@ as well as the neighborhood-modified labels.
 
 ![Neighborhood-Modified Labels](image-1.png)
 
-### Results
-
-| Model  | Test Accuracy | Errors | Permutation Test |
-|----------|----------|----------|----------|
-| Deep Sets | 97.0% | 6 / 200 | Exact |
-| Set Transformer | 96.0% | 8 / 200 | Exact |	
-| Janossy Pooling | 96.5% | 7 / 200	| Approximate |
-| PointNet++ | 96.0% | 8 / 200 | Exact |
-
 ## Deep Sets
 
 The Deep Sets model uses:
@@ -128,6 +119,15 @@ The implementation adapts hierarchical feature aggregation to the synthetic neig
 rather than reproducing the complete original 3D point-cloud PointNet++ architecture.
 
 Test accuracy produced a percentage of 96.0%, while permutation testing produced a maximum difference of 0.0 .
+
+### Results
+
+| Model  | Test Accuracy | Errors | Permutation Test |
+|----------|----------|----------|----------|
+| Deep Sets | 97.0% | 6 / 200 | Exact |
+| Set Transformer | 96.0% | 8 / 200 | Exact |	
+| Janossy Pooling | 96.5% | 7 / 200	| Approximate |
+| PointNet++ | 96.0% | 8 / 200 | Exact |
 
 ## Citeseer Experiments
 ### Dataset
@@ -296,3 +296,58 @@ for the Citeseer train-test split.
 
 Model training uses the Adam optimizer with a learning rate of 0.001.
 The exact results correspond to the notebook executions documented during the project development.
+
+# Advanced Research Expressions
+## Adversarial Neighborhoods
+
+The Deep Sets Model has been designed in such a way that is permutation invariant.
+In order to examine this phenomenon, the trained model will be evaluated using neighborhoods in which varying proportions
+of the original neighbors are replaced, while keeping the central points and their true labels unchanged.
+
+The experiment examines replacement percentages of 10%, 30% and 50%, corresponding to 1, 3 and 5 neighbors each.
+A neighborhood of k=10 is being examined. Comparing the resulting performance against the baseline performance
+from the initial neighborhoods, the goal is to assess the sensitivity of the Deep Sets model
+to adversarial changes in the composition of the neighborhoods.
+
+The results of the adversarial neighborhoods are depicted in the table below.
+
+![Adversarial Neighborhoods Table](image.png)
+
+The results indicate that the Deep Sets model is sensitive to changes in the composition of the neighborhood.
+The model achieves an accuracy of 96.5% and a macro-F1 score of 0.965 with the initial neighborhoods.
+
+When one of the ten neighbors is replaced by a point belonging to the opposite class, the accuracy drops to 92.5%,
+representing a decrease of 4.5 percentage points.
+
+A more pronounced decline is observed when three neighbors are replaced, with accuracy falling to 74.5%
+and the macro-F1 score to 0.7326.
+
+Replacing five neighbors reduces the accuracy to 45.5% and the macro-F1 score to 0.3416.
+
+## Explainability
+
+To investigate the local sensitivity of the Deep Sets model, an experiment was conducted in which individual neighbors were replaced
+with randomly selected data points from the opposite class.
+
+The analysis considered 50 test samples and performed 500 single-neighbor replacements in total,
+corresponding to 10 perturbations per sample.
+For each replacement, the absolute difference between the original predicted probability and the modified predicted probability
+was calculated.
+
+The mean absolute probability change was 0.0212,
+indicating that a single-neighbor replacement produced an average change of approximately 2.12 percentage points.
+However, the maximum observed change was 0.3850, or 38.5 percentage points.
+
+These results suggest that the model was relatively insensitive to most individual replacements, 
+although certain perturbations had a substantial effect on its output.
+
+This experiment provides a simple form of local sensitivity analysis by showing how the model's predictions respond 
+to changes in its neighborhood input. 
+It does not establish causal explanations or prove that individual neighbors are intrinsically important, 
+since the measured effects depend on the selected replacements. 
+
+Furthermore, the permutation-invariant architecture ensures that changing the order of the neighbors does not affect the prediction, 
+but it does not guarantee robustness to changes in their features. 
+
+Therefore, explainability is assessed through the model's response to controlled input perturbations 
+rather than through a complete explanation of its decision-making process.
